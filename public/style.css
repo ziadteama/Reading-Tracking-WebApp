@@ -1,0 +1,52 @@
+body {
+  background-color: #dfe6e9;
+  background-image: url("https://img.freepik.com/premium-vector/seamless-pattern-with-cozy-home-interior-stuffs-book-stack-houseplant-eyeglasses-coffee-candle_516241-1098.jpg?w=740");
+  background-size: cover;
+  background-position: center;
+  backdrop-filter: blur(5px);
+  height: 100vh;
+}
+
+.navbar {
+  background-color: #f9f3d3 !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2) !important;
+  position: sticky;
+  top: 0;
+}
+
+.navbar-dark .nav-item .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  border-radius: 0.25rem;
+  color: #fff;
+}
+
+.fa-li {
+  position: relative;
+  left: 0;
+}
+
+a.navbar-brand img {
+  height: 40px;
+}
+.teama-contain {
+  width: 100%;
+  background-color: #EDEBDF;
+  padding: 15px 8px;
+}
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+  gap: 3rem;
+  padding: 5px 8px;
+}
+.stats div {
+  display: block;
+  text-align: center;
+}
+.stats div img{
+    height: 45px;
+}
