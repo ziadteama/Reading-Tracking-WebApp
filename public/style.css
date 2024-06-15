@@ -101,6 +101,10 @@ a.navbar-brand img {
   transition-duration: 0.4s;
   font-weight: bold;
 }
+.container.t{
+  width: 100%;
+  background-color: #f9f3d3;
+}
 
 .add-to-books-btn:hover {
   background-color: #45a049; /* Darker green */
