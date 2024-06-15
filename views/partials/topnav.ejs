@@ -1,0 +1,47 @@
+<%- include('header.ejs') %>
+<!-- Navbar -->
+<nav class="navbar mt-0 navbar-expand-sm  fixed-top navbar-light bg-light">
+    <!-- Container wrapper -->
+    <div class="container-fluid">
+      <!-- Navbar brand -->
+      <a class="navbar-brand" href="/">
+        <img src="assets/logo.svg" height="30" alt="" loading="lazy" />
+      </a>
+  
+      <!-- Toggle button -->
+      <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+  
+      <!-- Collapsible wrapper -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <!-- Left links -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Books</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/mybooks">My Books</a>
+          </li>
+         
+        </ul>
+        <!-- Left links -->
+  
+        <!-- Search form -->
+        <form class="d-flex input-group w-auto" action="/search" method="post">
+          <input type="search" class="form-control" autocomplete="off" name="searchTitle" placeholder="Book title" aria-label="Search" />
+          <button class="btn btn-outline-primary" type="submit" data-mdb-ripple-color="dark" style="padding: .45rem 1.5rem .35rem;">
+            Search
+          </button>
+        </form>
+       
+  
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Navbar -->

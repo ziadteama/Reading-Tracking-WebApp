@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include("partials/header.ejs") %>
+
+    <body style="background-color: #EDEBDF; background-image: none;">
+        <%- include("partials/topnav.ejs") %>
+
+            <div class="booksFound mt-5">
+                <h2>Results: <%= numFound %>
+                </h2>
+                <% booksFound.forEach(book=> { %>
+                    <form action="/add" method="post" class="book-card">
+                    <input name="authorName" value="<%= book.author_name %>" type="text" style="display: none;">
+                    <input name="PublishYear" value="<%= book.first_publish_year %>" type="text" style="display: none;">
+                    <input name="bookTitle" value="<%= book.title %>" type="text" style="display: none;">
+                    <input name="bookId" value="<%= book.cover_i %>" type="text" style="display: none;">
+                        <img src="https://covers.openlibrary.org/b/id/<%= book.cover_i%>-M.jpg" loading="lazy"
+                            style="height: auto;" class="me-4" alt="">
+                        <div class="col">
+                            <p style="overflow-y: auto;">Title: <%= book.title %> <br> Author: <%= book.author_name %>
+                                        <br>
+                                        Publish Year: <%= book.first_publish_year %> <br>
+                                        <% if(book.isbn){ %>
+                                            ISBN: <%= book.isbn[0] %> <br><% } %>
+                                                Average Rating: <%= book.ratings_average %> <br></p>
+
+                            <div class="container mt-4">
+                                <button class="add-to-books-btn " type="submit">Add to My Books</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <% }) %>
+            </div>
+
+    </body>
+
+</html>
