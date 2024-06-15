@@ -26,7 +26,9 @@ app.get("/", (req, res) => {
   res.render("home.ejs", { users: users });
 });
 app.get("/mybooks", async (req, res) => {
-  const result = await db.query("SELECT * FROM public.books ORDER BY rate DESC ");
+  const result = await db.query(
+    "SELECT * FROM public.books ORDER BY rate DESC "
+  );
   const myBooks = result.rows;
   console.log(myBooks);
   res.render("mybooks.ejs", { myBooks: myBooks });
@@ -60,12 +62,23 @@ app.post("/savemybooks", async (req, res) => {
   const newNotes = req.body.newNotes;
   const coverId = req.body.coverId;
   const bookRate = req.body.rate;
-  const result = await db.query(
-    `UPDATE books
+  const notes = newNotes.trimStart();
+  if (bookRate) {
+    const result = await db.query(
+      `UPDATE books
 SET notes =$1, rate=$2
 WHERE coverid = $3;`,
-    [newNotes, bookRate, coverId]
-  );
+      [notes, bookRate, coverId]
+    );
+  } else {
+    const result = await db.query(
+      `UPDATE books
+SET notes =$1
+WHERE coverid = $2;`,
+      [notes, coverId]
+    );
+  }
+
   res.redirect("/mybooks");
 });
 
