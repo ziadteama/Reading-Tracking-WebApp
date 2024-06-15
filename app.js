@@ -60,7 +60,8 @@ app.get("/mybooks", async (req, res) => {
   const result = await db.query(
     "SELECT * FROM public.books ORDER BY rate DESC "
   );
-  res.render("mybooks.ejs", { myBooks: myBooks });
+  const mybooks=result.rows;
+  res.render("mybooks.ejs", { myBooks: mybooks });
 });
 
 app.post("/search", async (req, res) => {
