@@ -207,6 +207,7 @@
                     </div>
                 </form>
                 <form class="delete" action="/delete" method="post">
+                    <input name="coverId" value=" <%= book.coverid %>" type="hidden">
                     <button id="deleteButton" class="btn btn-danger" type="submit">Delete</button>
                 </form>
                 <% }); %>

@@ -111,6 +111,13 @@ WHERE coverid = $2;`,
 
   res.redirect("/mybooks");
 });
+app.post("/delete", async(req,res)=>{
+  const coverId = req.body.coverId;
+  const result=db.query(`DELETE FROM books
+WHERE coverid = $1;`,[coverId]);
+res.redirect("/mybooks");
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
