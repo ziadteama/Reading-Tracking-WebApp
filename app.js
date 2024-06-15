@@ -17,19 +17,46 @@ db.connect();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
+let favBookName;
+let noOfBooksRead=0;
+let favouriteAuthor;
 let users = [
   { id: 1, name: "Angela", color: "teal" },
   { id: 2, name: "Jack", color: "powderblue" },
 ];
+
+function findMostRepeatedText(array, key) {
+  let counts = {};
+  let mostRepeatedText = null;
+  let highestCount = 0;
+
+  array.forEach(obj => {
+      let text = obj[key];
+      counts[text] = (counts[text] || 0) + 1;
+      if (counts[text] > highestCount) {
+          highestCount = counts[text];
+          mostRepeatedText = text;
+      }
+  });
+
+  return mostRepeatedText;
+}
+
+
 app.get("/", (req, res) => {
-  res.render("home.ejs", { users: users });
+  res.render("home.ejs", { booksRead:noOfBooksRead,
+    favouriteAuthor: favouriteAuthor   ,
+    favBookName:favBookName
+   });
 });
 app.get("/mybooks", async (req, res) => {
   const result = await db.query(
     "SELECT * FROM public.books ORDER BY rate DESC "
   );
   const myBooks = result.rows;
+  favBookName=myBooks[0].title;
+  noOfBooksRead=result.rowCount;
+  favouriteAuthor=findMostRepeatedText(myBooks,`author`);
   console.log(myBooks);
   res.render("mybooks.ejs", { myBooks: myBooks });
 });
