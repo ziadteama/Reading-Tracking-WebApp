@@ -61,11 +61,13 @@ function findMostRepeatedText(array, key) {
 }
 
 app.get("/", async (req, res) => {
-  const result = await db.query(
+  if(req.user){
+    console.log(req.user.email);
+    const result = await db.query(
     "SELECT * FROM public.books ORDER BY rate DESC "
   );
   const myBooks = result.rows;
-  //  favBookName = myBooks[0].title;
+  favBookName = myBooks[0]? myBooks[0].title:"elmanga" ;
   noOfBooksRead = result.rowCount;
   favouriteAuthor = findMostRepeatedText(myBooks, `author`);
   res.render("home.ejs", {
@@ -73,6 +75,9 @@ app.get("/", async (req, res) => {
     favouriteAuthor: favouriteAuthor,
     favBookName: favBookName,
   });
+  }
+  else res.redirect("/login");
+  
 });
 
 app.get("/login", (req, res) => {
@@ -197,7 +202,6 @@ passport.use(
       if (result.rows.length > 0) {
         const user = result.rows[0];
         const storedHashPassword = user.password;
-        console.log(user);
         bcrypt.compare(password, storedHashPassword, (err, valid) => {
           if (err) {
             console.log("error passwords conpare ", err);
