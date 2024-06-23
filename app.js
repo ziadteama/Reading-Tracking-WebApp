@@ -2,7 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import axios from "axios";
-import { config } from "process";
+
+
 const app = express();
 const port = 3000;
 const searchApiUrl = "https://openlibrary.org/search.json";
@@ -60,7 +61,7 @@ app.get("/mybooks", async (req, res) => {
   const result = await db.query(
     "SELECT * FROM public.books ORDER BY rate DESC "
   );
-  const mybooks=result.rows;
+  const mybooks = result.rows;
   res.render("mybooks.ejs", { myBooks: mybooks });
 });
 
@@ -79,7 +80,7 @@ app.post("/add", async (req, res) => {
   const publishYear = req.body.PublishYear;
   const bookTitle = req.body.bookTitle;
   const bookId = req.body.bookId;
-
+try {
   const result = await db.query(
     `INSERT INTO public.books(
 	 title, author, publishyear, coverid)
@@ -87,6 +88,11 @@ app.post("/add", async (req, res) => {
     [bookTitle, authorName, publishYear, bookId]
   );
   res.redirect("/mybooks");
+} catch (error) {
+  res.status(505).send('book alr in your list go back please'); 
+}
+  
+  
 });
 app.post("/savemybooks", async (req, res) => {
   const newNotes = req.body.newNotes;
@@ -111,13 +117,15 @@ WHERE coverid = $2;`,
 
   res.redirect("/mybooks");
 });
-app.post("/delete", async(req,res)=>{
+app.post("/delete", async (req, res) => {
   const coverId = req.body.coverId;
-  const result=db.query(`DELETE FROM books
-WHERE coverid = $1;`,[coverId]);
-res.redirect("/mybooks");
+  const result = db.query(
+    `DELETE FROM books
+WHERE coverid = $1;`,
+    [coverId]
+  );
+  res.redirect("/mybooks");
 });
-
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
