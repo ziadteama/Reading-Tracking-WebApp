@@ -57,6 +57,11 @@ app.get("/", async (req, res) => {
     favBookName: favBookName,
   });
 });
+
+app.get("/login",(req,res)=>{
+  res.render("login.ejs");
+});
+
 app.get("/mybooks", async (req, res) => {
   const result = await db.query(
     "SELECT * FROM public.books ORDER BY rate DESC "
