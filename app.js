@@ -2,17 +2,21 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import axios from "axios";
-
+import bcrypt from "bcrypt";
+import env from "dotenv";
 
 const app = express();
 const port = 3000;
 const searchApiUrl = "https://openlibrary.org/search.json";
+const saltRounds = 10;
+env.config();
+
 const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "book",
-  password: "Ziadteama1",
-  port: 5432,
+  user: process.env.PG_USER,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DATABASE,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
 });
 db.connect();
 
@@ -21,10 +25,6 @@ app.use(express.static("public"));
 let favBookName;
 let noOfBooksRead = 0;
 let favouriteAuthor;
-let users = [
-  { id: 1, name: "Angela", color: "teal" },
-  { id: 2, name: "Jack", color: "powderblue" },
-];
 
 function findMostRepeatedText(array, key) {
   let counts = {};
@@ -58,11 +58,11 @@ app.get("/", async (req, res) => {
   });
 });
 
-app.get("/login",(req,res)=>{
+app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
-app.get("/signup",(req,res)=>{
+app.get("/signup", (req, res) => {
   res.render("signup.ejs");
 });
 
@@ -73,6 +73,30 @@ app.get("/mybooks", async (req, res) => {
   const mybooks = result.rows;
   res.render("mybooks.ejs", { myBooks: mybooks });
 });
+
+app.post("/register", async (req, res) => {
+  const email = req.body.username;
+  const password = req.body.password;
+  const name = req.body.name;
+  try {
+    const result = await db.query(`SELECT * from users WHERE email=$1`, [
+      email,
+    ]);
+    if (result.rows.length) res.redirect("/login");
+    else {
+      bcrypt.hash(password, saltRounds, async (err, hash) => {
+        await db.query(
+          `INSERT INTO users (email,password,name) VALUES ($1,$2,$3)`,
+          [email, hash, name]
+        );
+      });
+    }
+  } catch (error) {
+    res.send(error)
+  }
+});
+
+app.post("/login", (req, res) => {});
 
 app.post("/search", async (req, res) => {
   const searchTitle = req.body.searchTitle;
@@ -89,19 +113,17 @@ app.post("/add", async (req, res) => {
   const publishYear = req.body.PublishYear;
   const bookTitle = req.body.bookTitle;
   const bookId = req.body.bookId;
-try {
-  const result = await db.query(
-    `INSERT INTO public.books(
+  try {
+    const result = await db.query(
+      `INSERT INTO public.books(
 	 title, author, publishyear, coverid)
 	VALUES ($1, $2, $3, $4);`,
-    [bookTitle, authorName, publishYear, bookId]
-  );
-  res.redirect("/mybooks");
-} catch (error) {
-  res.status(505).send('book alr in your list go back please'); 
-}
-  
-  
+      [bookTitle, authorName, publishYear, bookId]
+    );
+    res.redirect("/mybooks");
+  } catch (error) {
+    res.status(505).send("book alr in your list go back please");
+  }
 });
 app.post("/savemybooks", async (req, res) => {
   const newNotes = req.body.newNotes;
