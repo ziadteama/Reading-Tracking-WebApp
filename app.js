@@ -61,27 +61,38 @@ function findMostRepeatedText(array, key) {
 }
 
 app.get("/", async (req, res) => {
-  if(req.user){
-    console.log(req.user.email);
+  if (req.user) {
+    console.log(req.user.userid);
     const result = await db.query(
-    "SELECT * FROM public.books ORDER BY rate DESC "
-  );
-  const myBooks = result.rows;
-  favBookName = myBooks[0]? myBooks[0].title:"elmanga" ;
-  noOfBooksRead = result.rowCount;
-  favouriteAuthor = findMostRepeatedText(myBooks, `author`);
-  res.render("home.ejs", {
-    booksRead: noOfBooksRead,
-    favouriteAuthor: favouriteAuthor,
-    favBookName: favBookName,
-  });
+      "SELECT * FROM public.books WHERE userid = $1 ORDER BY rate DESC ",[req.user.userid]
+    );
+    const myBooks = result.rows;
+    favBookName = myBooks[0] ? myBooks[0].title : "Start Reading Fool";
+    noOfBooksRead = result.rowCount;
+    favouriteAuthor = findMostRepeatedText(myBooks, `author`);
+    res.render("home.ejs", {
+      booksRead: noOfBooksRead,
+      favouriteAuthor: favouriteAuthor,
+      favBookName: favBookName,
+      username: req.user.name,
+    });
+  } else {
+    console.log(req.user);
+    res.redirect("/login");
   }
-  else res.redirect("/login");
-  
 });
 
 app.get("/login", (req, res) => {
   res.render("login.ejs");
+});
+
+app.get("/logout", (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
 });
 
 app.get("/signup", (req, res) => {
@@ -90,9 +101,18 @@ app.get("/signup", (req, res) => {
 
 app.get("/mybooks", async (req, res) => {
   const result = await db.query(
-    "SELECT * FROM public.books ORDER BY rate DESC "
+    `SELECT 
+    *
+FROM 
+    users
+INNER JOIN 
+    books 
+ON 
+    users.userid = books.userid WHERE users.userid = $1 ORDER BY books.rate DESC`,
+    [req.user.userid]
   );
   const mybooks = result.rows;
+  console.log(mybooks);
   res.render("mybooks.ejs", { myBooks: mybooks });
 });
 
@@ -107,11 +127,12 @@ app.post("/register", async (req, res) => {
     if (checkResult.rows.length) res.redirect("/login");
     else {
       bcrypt.hash(password, saltRounds, async (err, hash) => {
-        const result = await db.query(
+        let result = await db.query(
           `INSERT INTO users (email,password,name) VALUES ($1,$2,$3) RETURNING *`,
           [email, hash, name]
         );
-        const user = result.rows[0];
+       const user=result.rows[0];
+        console.log(user);
         req.login(user, (err) => {
           console.log("success");
           res.redirect("/");
@@ -150,34 +171,43 @@ app.post("/add", async (req, res) => {
   try {
     const result = await db.query(
       `INSERT INTO public.books(
-	 title, author, publishyear, coverid)
-	VALUES ($1, $2, $3, $4);`,
-      [bookTitle, authorName, publishYear, bookId]
+	 title, author, publishyear, coverid, userid)
+	VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+      [bookTitle, authorName, publishYear, bookId, req.user.userid]
     );
+    console.log(result.rows);
     res.redirect("/mybooks");
   } catch (error) {
-    res.status(505).send("book alr in your list go back please");
+    res.status(505).send(error);
   }
 });
 app.post("/savemybooks", async (req, res) => {
-  const newNotes = req.body.newNotes;
-  const coverId = req.body.coverId;
-  const bookRate = req.body.rate;
-  const notes = newNotes.trimStart();
-  if (bookRate) {
+  const coverId =parseInt (req.body.coverId,10);
+  if ((req.body.delete)) {
     const result = await db.query(
-      `UPDATE books
-SET notes =$1, rate=$2
-WHERE coverid = $3;`,
-      [notes, bookRate, coverId]
+      `DELETE FROM books
+WHERE coverid = $1;`,
+      [coverId]
     );
   } else {
-    const result = await db.query(
-      `UPDATE books
+    const newNotes = req.body.newNotes;
+    const bookRate = req.body.rate;
+    const notes = newNotes.trimStart();
+    if (bookRate) {
+      const result = await db.query(
+        `UPDATE books
+SET notes =$1, rate=$2
+WHERE coverid = $3;`,
+        [notes, bookRate, coverId]
+      );
+    } else {
+      const result = await db.query(
+        `UPDATE books
 SET notes =$1
 WHERE coverid = $2;`,
-      [notes, coverId]
-    );
+        [notes, coverId]
+      );
+    }
   }
 
   res.redirect("/mybooks");
