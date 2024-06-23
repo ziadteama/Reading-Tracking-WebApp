@@ -3,6 +3,9 @@ import bodyParser from "body-parser";
 import pg from "pg";
 import axios from "axios";
 import bcrypt from "bcrypt";
+import passport from "passport";
+import session from "express-session";
+import { Strategy } from "passport-local";
 import env from "dotenv";
 
 const app = express();
@@ -20,8 +23,22 @@ const db = new pg.Client({
 });
 db.connect();
 
+app.use(
+  session(
+    {
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: true,
+    },
+    { Cookie: { maxAge: 1000 * 60 * 60 * 24 * 365 } }
+  )
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 let favBookName;
 let noOfBooksRead = 0;
 let favouriteAuthor;
@@ -48,7 +65,7 @@ app.get("/", async (req, res) => {
     "SELECT * FROM public.books ORDER BY rate DESC "
   );
   const myBooks = result.rows;
-  favBookName = myBooks[0].title;
+  //  favBookName = myBooks[0].title;
   noOfBooksRead = result.rowCount;
   favouriteAuthor = findMostRepeatedText(myBooks, `author`);
   res.render("home.ejs", {
@@ -79,24 +96,36 @@ app.post("/register", async (req, res) => {
   const password = req.body.password;
   const name = req.body.name;
   try {
-    const result = await db.query(`SELECT * from users WHERE email=$1`, [
+    const checkResult = await db.query(`SELECT * from users WHERE email=$1`, [
       email,
     ]);
-    if (result.rows.length) res.redirect("/login");
+    if (checkResult.rows.length) res.redirect("/login");
     else {
       bcrypt.hash(password, saltRounds, async (err, hash) => {
-        await db.query(
-          `INSERT INTO users (email,password,name) VALUES ($1,$2,$3)`,
+        const result = await db.query(
+          `INSERT INTO users (email,password,name) VALUES ($1,$2,$3) RETURNING *`,
           [email, hash, name]
         );
+        const user = result.rows[0];
+        req.login(user, (err) => {
+          console.log("success");
+          res.redirect("/");
+        });
       });
     }
   } catch (error) {
-    res.send(error)
+    console.log(error);
+    res.send(error);
   }
 });
 
-app.post("/login", (req, res) => {});
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+  })
+);
 
 app.post("/search", async (req, res) => {
   const searchTitle = req.body.searchTitle;
@@ -157,6 +186,34 @@ WHERE coverid = $1;`,
   );
   res.redirect("/mybooks");
 });
+
+passport.use(
+  "local",
+  new Strategy(async function verify(username, password, cb) {
+    try {
+      const result = await db.query("SELECT * from users WHERE email=$1", [
+        username,
+      ]);
+      if (result.rows.length > 0) {
+        const user = result.rows[0];
+        const storedHashPassword = user.password;
+        bcrypt.compare(password, storedHashPassword, (err, valid) => {
+          if (err) {
+            console.log("error passwords conpare ", err);
+            return cb(err);
+          } else {
+            if (valid) return cb(null, user);
+            else return cb(null, false);
+          }
+        });
+      } else {
+        return cb("user not found");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  })
+);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
