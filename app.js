@@ -197,6 +197,7 @@ passport.use(
       if (result.rows.length > 0) {
         const user = result.rows[0];
         const storedHashPassword = user.password;
+        console.log(user);
         bcrypt.compare(password, storedHashPassword, (err, valid) => {
           if (err) {
             console.log("error passwords conpare ", err);
@@ -214,6 +215,14 @@ passport.use(
     }
   })
 );
+
+passport.serializeUser((user, cb) => {
+  cb(null, user);
+});
+
+passport.deserializeUser((user, cb) => {
+  cb(null, user);
+});
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
