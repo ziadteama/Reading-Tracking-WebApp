@@ -1,48 +1,25 @@
 <%- include('header.ejs') %>
 <!-- Navbar -->
-<nav class="navbar mt-0 navbar-expand-sm  fixed-top navbar-light bg-light">
-    <!-- Container wrapper -->
-    <div class="container-fluid">
-      <!-- Navbar brand -->
-      <a class="navbar-brand" href="/">
-        <img src="assets/logo.svg" height="30" alt="" loading="lazy" />
+<header class="p-3 text-bg shadow-lg" style="background-color: #F9F3D3;">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+       <img src="assets/logo.svg" alt="">
       </a>
-  
-      <!-- Toggle button -->
-      <button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <i class="fas fa-bars"></i>
-      </button>
-  
-      <!-- Collapsible wrapper -->
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <!-- Left links -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Books</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/mybooks">My Books</a>
-          </li>
-         
-        </ul>
-        <!-- Left links -->
-  
-        <!-- Search form -->
-        <form class="d-flex input-group w-auto" action="/search" method="post">
-          <input type="search" class="form-control" autocomplete="off" name="searchTitle" placeholder="Book title" aria-label="Search" />
-          <button class="btn btn-outline-primary" type="submit" data-mdb-ripple-color="dark" style="padding: .45rem 1.5rem .35rem;">
-            Search
-          </button>
-          <a href="/logout" role="button" class="btn btn-outline-danger">Log Out</a>
-        </form>
-       
-  
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="/" class="nav-link px-2 text-dark">Home</a></li>
+        <li><a href="/mybooks" class="nav-link px-2 text-dark">My Books</a></li>
+        <li><a href="#" class="nav-link px-2 text-dark">About</a></li>
+      </ul>
+
+      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="/search" method="post" role="search">
+        <input type="search" name="searchTitle" class="form-control form-control-light text-bg-light" placeholder="Search..." aria-label="Search">
+      </form>
+
+      <div class="text-end">
+        <a href="/logout" type="button" class="btn btn-danger">Log Out</a>
       </div>
     </div>
-  </nav>
-  
-  <!-- Navbar -->
+  </div>
+</header>
