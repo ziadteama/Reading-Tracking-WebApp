@@ -1,11 +1,11 @@
 body {
-  background-color: #dfe6e9;
-  background-image: url("https://img.freepik.com/premium-vector/seamless-pattern-with-cozy-home-interior-stuffs-book-stack-houseplant-eyeglasses-coffee-candle_516241-1098.jpg?w=740");
+  background-color: #ffffff;
+  /* background-image: url("https://img.freepik.com/premium-vector/seamless-pattern-with-cozy-home-interior-stuffs-book-stack-houseplant-eyeglasses-coffee-candle_516241-1098.jpg?w=740");
   background-size: cover;
   background-repeat: repeat;
   background-position: center;
   backdrop-filter: blur(5px);
-  height: 100vh;
+  height: 100vh; */
 }
 
 .navbar {
