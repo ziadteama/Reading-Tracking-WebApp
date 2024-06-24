@@ -64,7 +64,8 @@ app.get("/", async (req, res) => {
   if (req.user) {
     console.log(req.user.userid);
     const result = await db.query(
-      "SELECT * FROM public.books WHERE userid = $1 ORDER BY rate DESC ",[req.user.userid]
+      "SELECT * FROM public.books WHERE userid = $1 ORDER BY rate DESC ",
+      [req.user.userid]
     );
     const myBooks = result.rows;
     favBookName = myBooks[0] ? myBooks[0].title : "Start Reading Fool";
@@ -100,8 +101,10 @@ app.get("/signup", (req, res) => {
 });
 
 app.get("/mybooks", async (req, res) => {
-  const result = await db.query(
-    `SELECT 
+  if (!req.user) res.redirect("/login");
+  else {
+    const result = await db.query(
+      `SELECT 
     *
 FROM 
     users
@@ -109,11 +112,11 @@ INNER JOIN
     books 
 ON 
     users.userid = books.userid WHERE users.userid = $1 ORDER BY books.rate DESC`,
-    [req.user.userid]
-  );
-  const mybooks = result.rows;
-  console.log(mybooks);
-  res.render("mybooks.ejs", { myBooks: mybooks });
+      [req.user.userid]
+    );
+    const mybooks = result.rows;
+    res.render("mybooks.ejs", { myBooks: mybooks });
+  }
 });
 
 app.post("/register", async (req, res) => {
@@ -131,7 +134,7 @@ app.post("/register", async (req, res) => {
           `INSERT INTO users (email,password,name) VALUES ($1,$2,$3) RETURNING *`,
           [email, hash, name]
         );
-       const user=result.rows[0];
+        const user = result.rows[0];
         console.log(user);
         req.login(user, (err) => {
           console.log("success");
@@ -182,8 +185,8 @@ app.post("/add", async (req, res) => {
   }
 });
 app.post("/savemybooks", async (req, res) => {
-  const coverId =parseInt (req.body.coverId,10);
-  if ((req.body.delete)) {
+  const coverId = parseInt(req.body.coverId, 10);
+  if (req.body.delete) {
     const result = await db.query(
       `DELETE FROM books
 WHERE coverid = $1;`,
