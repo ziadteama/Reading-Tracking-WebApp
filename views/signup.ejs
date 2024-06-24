@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- Coding By CodingNepal - www.codingnepalweb.com -->
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Notes</title>
+  <link rel="stylesheet" href="signin.css">
+</head>
+
+<body>
+  <div class="wrapper">
+    <form action="/register" autocomplete="off" method="post">
+      <h2>Sign Up</h2>
+      <div class="input-field">
+        <input autocomplete="off" type="text" name="name" required>
+        <label>Enter Your Name</label>
+      </div>
+      <div class="input-field">
+        <input  type="text" autocomplete="off" name="username" required>
+        <label>Enter your email</label>
+      </div>
+      <div class="input-field">
+        <input type="password" name="password" required>
+        <label>Enter your password</label>
+      </div>
+      <!-- <div class="forget">
+        <label for="remember">
+          <input type="checkbox" id="remember">
+          <p>Remember me</p>
+        </label>
+        <a href="#">Forgot password?</a>
+      </div> -->
+      <button type="submit"> Sign Up</button>
+      <a style="text-decoration: none; display: block;" href="/auth/google"><button type="button"
+          style="width: 100%;"><img src="assets/google.png" alt="">Sign up using Google</button></a>
+      <div class="register">
+        <p>Already registered? <a href="/login">Sign In</a></p>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
