@@ -25,15 +25,19 @@ const db = new pg.Client({
 db.connect();
 
 app.use(
-  session(
-    {
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: true,
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      path: "/",
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+      secure: false,
     },
-    { Cookie: { maxAge: 1000 * 60 * 60 * 24 * 365 } }
-  )
+  })
 );
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
@@ -62,7 +66,7 @@ function findMostRepeatedText(array, key) {
 }
 
 app.get("/", async (req, res) => {
-  if (req.user) {
+  if (req.isAuthenticated()) {
     console.log(req.user.userid);
     const result = await db.query(
       "SELECT * FROM public.books WHERE userid = $1 ORDER BY rate DESC ",
@@ -268,34 +272,36 @@ passport.use(
   })
 );
 
-passport.use("google",new GoogleStrategy(
-  {
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:3000/auth/google/books",
-    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
-  },
-  async (accestoken, refreshtoken, profile, cb) => {
-    console.log(profile.displayName);
-    try {
-      console.log(profile);
-      const result=await db.query("SELECT * from users WHERE email=$1",[
-        profile.email
-      ]);
-      if(result.rows.length>0)
-        return cb(null,result.rows[0]);
-      else{
-        const newUser = await db.query(
-          "INSERT INTO users (email, name, password) VALUES ($1, $2,$3)",
-          [profile.email, profile.displayName, "google"]
-        );
-        return cb(null,newUser.rows[0]);
+passport.use(
+  "google",
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/auth/google/books",
+      userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+    },
+    async (accestoken, refreshtoken, profile, cb) => {
+      console.log(profile.displayName);
+      try {
+        console.log(profile);
+        const result = await db.query("SELECT * from users WHERE email=$1", [
+          profile.email,
+        ]);
+        if (result.rows.length > 0) return cb(null, result.rows[0]);
+        else {
+          const newUser = await db.query(
+            "INSERT INTO users (email, name, password) VALUES ($1, $2,$3)",
+            [profile.email, profile.displayName, "google"]
+          );
+          return cb(null, newUser.rows[0]);
+        }
+      } catch (error) {
+        return cb(error);
       }
-    } catch (error) {
-      return cb(error);
     }
-  }
-));
+  )
+);
 
 passport.serializeUser((user, cb) => {
   cb(null, user);
