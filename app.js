@@ -139,7 +139,7 @@ ON
 });
 
 app.post("/register", async (req, res) => {
-  const email = req.body.username;
+  const email = (req.body.username).toLowerCase();
   const password = req.body.password;
   const name = req.body.name;
   try {
@@ -180,6 +180,7 @@ app.post("/search", async (req, res) => {
   console.log(searchTitle);
   const response = await axios.get(searchApiUrl + `?title=${searchTitle}`);
   const booksFound = response.data;
+  console.log(booksFound.cover_i);
   res.render("search.ejs", {
     booksFound: booksFound.docs,
     numFound: booksFound.numFound,

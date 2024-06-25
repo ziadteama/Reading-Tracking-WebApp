@@ -14,18 +14,19 @@
                     <input name="PublishYear" value="<%= book.first_publish_year %>" type="text" style="display: none;">
                     <input name="bookTitle" value="<%= book.title %>" type="text" style="display: none;">
                     <input name="bookId" value="<%= book.cover_i %>" type="text" style="display: none;">
-                        <img src="https://covers.openlibrary.org/b/id/<%= book.cover_i%>-M.jpg" loading="lazy"
-                            style="height: auto;" class="me-4" alt="">
+                    <% if(book.cover_i){ %>
+                        <img src="https://covers.openlibrary.org/b/id/<%= book.cover_i%>-M.jpg" loading="lazy">
+                        <% }else{ %> <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/No_Cover.jpg" alt=""> <% } %>
                         <div class="col">
-                            <p style="overflow-y: auto;">Title: <%= book.title %> <br> Author: <%= book.author_name %>
+                            <p style="overflow-y: auto;"><strong>Title:</strong>  <%= book.title %> <br> <strong>Author:</strong> <%= book.author_name %>
                                         <br>
-                                        Publish Year: <%= book.first_publish_year %> <br>
+                                        <strong>Publish Year:</strong> <%= book.first_publish_year %> <br>
                                         <% if(book.isbn){ %>
-                                            ISBN: <%= book.isbn[0] %> <br><% } %>
-                                                Average Rating: <%= book.ratings_average %> <br></p>
+                                            <strong>ISBN:</strong>  <%= book.isbn[0] %> <br><% } %>
 
+                            </p>
                             <div class="container mt-4">
-                                <button class="add-to-books-btn " type="submit">Add to My Books</button>
+                                <button class="add-to-books-btn " type="submit">Add Book</button>
                             </div>
                         </div>
                     </form>

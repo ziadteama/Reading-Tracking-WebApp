@@ -36,6 +36,9 @@ a.navbar-brand img {
   padding: 15px 8px;
 }
 .stats {
+  width: 100%;
+  background-color: #edebdf;
+
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
@@ -111,3 +114,45 @@ a.navbar-brand img {
   background-color: #45a049; /* Darker green */
   float: inline-end;
 }
+@media only screen and (max-width: 767px) {
+
+  .book-card .add-to-books-btn{
+    width: fit-content;
+    height: 30px;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    margin-top: 3px;
+  }
+  .book-card p{
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 70%;
+    margin: 0 3px 8px 5px;
+  }
+  .book-card img{
+    width: 40%;
+    height: auto;
+    margin-right: 3px;
+  }
+
+  #logout{
+    font-size: 0.8rem;
+    margin-bottom: 13px;
+    margin-left: 5px;
+  }
+
+  .stats{
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    padding: 0 8px;
+  }
+  .stats div{
+    width: 50%;
+  }
+
+  }
