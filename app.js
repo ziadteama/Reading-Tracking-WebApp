@@ -10,7 +10,7 @@ import GoogleStrategy from "passport-google-oauth2";
 import env from "dotenv";
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const searchApiUrl = "https://openlibrary.org/search.json";
 const saltRounds = 10;
 env.config();
