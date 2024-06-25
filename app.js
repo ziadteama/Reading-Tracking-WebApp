@@ -197,10 +197,9 @@ app.post("/add", async (req, res) => {
 	VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
       [bookTitle, authorName, publishYear, bookId, req.user.userid]
     );
-    console.log(result.rows);
     res.redirect("/mybooks");
   } catch (error) {
-    res.status(505).send(error);
+    res.redirect("/mybooks");
   }
 });
 app.post("/savemybooks", async (req, res) => {
